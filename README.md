@@ -217,6 +217,9 @@ Now time for you to practice!
 
 Can you include a dot plot on the `Home` tab that shows the players that completed a certain number of passes within a certain range, where the range depends on the slider from the side bar?
 
+
+Solutions are included in the final app located in the `Shiny_FinalApp/app.R`
+
 ### Step 8: Publishing to Posit Cloud
 Create an account at [Posit Cloud](https://posit.cloud/), then click publish in RStudio and login using your account. This will push your app to the Posit server.
 
@@ -230,4 +233,3 @@ Below are other topics that could potentially be useful:
 - Tab Title Styling
 
 
-Solutions are included in the final app located in the `Shiny_FinalApp/app.R`
