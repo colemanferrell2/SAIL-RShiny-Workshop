@@ -227,6 +227,7 @@ Once you publish your app, you will get a unique link that corresponds to your a
 
 ### Step 9: Extra Topics
 Below are other topics that could potentially be useful:
+- Password protected apps
 - Shiny Cards
 - Conditional Panels
 - Tab Panels
