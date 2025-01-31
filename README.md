@@ -1,6 +1,6 @@
 # SAIL RShiny Workshop
 ## By Coleman Ferrell
-Exercises adapted from Shiny basics of https://shiny.posit.co/ 
+Exercises adapted from Shiny basics of [Shiny](https://shiny.posit.co/) 
 
 # Building your RShiny Webpage
 ### Step 0: Install Packages
@@ -9,6 +9,14 @@ You must first install the `shiny` package before building your app
 install.packages("shiny")
 ```
 
+Also install these packages if you do not already have them:
+```R
+install.packages("dplyr")
+install.packages("DT")
+install.packages("ggplot")
+install.packages("shinyThemes")
+
+```
 ### Step 1: Open Template
 The base template for your app’s framework is located at `Shiny_Template/app.R`. A brief description of the layout is discussed below, and we will then begin building upon this foundation. 
 
@@ -96,7 +104,7 @@ sidebarLayout(
 ```
 ### Step 3: Adding Widgets to UI
 A widget is "a web element that your users can interact with. Widgets provide a way for your users to send messages to the Shiny app.
-Shiny widgets collect a value from your user. When a user changes the widget, the value will change as well." In other words, widgets are the buttons/sliders the user can react with on the `ui` that sends a signal to the `server`. Example widgets from the `shiny` package can be found [Here]((https://shiny.posit.co/r/gallery/widgets/widget-gallery/)) 
+Shiny widgets collect a value from your user. When a user changes the widget, the value will change as well." In other words, widgets are the buttons/sliders the user can react with on the `ui` that sends a signal to the `server`. Example widgets from the `shiny` package can be found [Here](https://shiny.posit.co/r/gallery/widgets/widget-gallery/) 
 
 While these options are sufficient, the `shinyWidgets` package offers a more extensive and diverse collection of widgets. Thus, we will use widgets from this package. First, we must install the pack via the following
 ```R
@@ -136,3 +144,90 @@ sidebarPanel(
 ```
 ### Step 4: Use R scripts and data
 We now will import data into our app. We will be examining NFL player stats from the 2023 season, which are stored in the `player_stats.rds` file. We need to load this data into the `app.R` file by including ```R player_stats <- readRDS("player_stats.rds")``` before the `ui` and the `server`.
+
+Once the data is loaded, we add a reactive expression in the server to filter the player stats based on the user’s selection from the dropdown menu. Additionally, we create a `renderTable()` function to dynamically display the filtered data in the main panel whenever a new player is selected. ie: The reactive expression recieves the input signal from the `ui`, whereas the render table send the updated table back to the `ui`. We add the following code inside the `server`
+
+```R
+# Reactive expression to filter player stats
+  selected_player_stats <- reactive({
+    player_stats %>%
+      filter(player_display_name == input$dropdown) 
+  })
+  
+  # Render table output
+  output$player_stats_table <- DT::renderDataTable({
+    DT::datatable(selected_player_stats(), options = list(
+      scrollX = TRUE,  # Enables horizontal scrolling
+      autoWidth = TRUE, # Adjusts column widths automatically
+      pageLength = 10   # Show 10 rows per page
+    ))
+  })
+```
+No table shows because our current current filters in the side panel do not match the values in the table and we have not added a output in the main panel. First, we upadte our widget to reflect our table, we change the `pickerInput()` to:
+
+```R
+pickerInput(
+        inputId = "dropdown",
+        label = "Select a Player:",
+        choices = unique(player_stats$player_display_name),
+        multiple = FALSE,  # Single selection
+        options = list(
+          style = "btn-primary"
+        )
+      )
+    )
+```
+
+Next, we modify our main panel to have the table. We use the `DT` package because it has better user features and sizes automatically. Below is the code:
+```R
+mainPanel(
+                 h2("Main Content"),
+                 DT::dataTableOutput("player_stats_table")
+                              )
+```
+### Step 5: Adding a tab
+We can add a new tab at the top of our page, this acts as a new page. You can apply a different dynamics and formatting if you wish. However, reactions and filtering can still go across tabs. Let's move our table to another tab. Note nothing changes in the server since the we still want the same logic for filtering. So, we remove the `DT` table from the main panel in the `Home`. We then create a new tab called `Player Stats` as follows:
+```R
+tabPanel("Player Stats",
+                 sidebarLayout(
+                   sidebarPanel(
+                     h3("Sidebar"),
+                   ),position = "right",
+                   mainPanel(
+                     h2("Main Content"),
+                     DT::dataTableOutput("player_stats_table")
+                                        )
+                 )
+        )
+```
+
+Our filter is now on the `Home` tab, but the table outputs onto our new tab.
+
+### Step 6: Styling Page
+Shiny apps can use Bootstrap-based themes to enhance their visual appeal. The `shinytheme()` function allows you to apply a **Bootswatch theme**, which provides a pre-designed UI style. This includes color schemes and font styles and colors. In this app, the following line applies the **"Cerulean"** Bootswatch theme (nice because default colors are Light Blue). Even though the current theme is desirably for Tar Heels, let us switch themes to a `yeti` theme. Avaliable themes are [Here](https://rstudio.github.io/shinythemes/)
+
+```R
+theme = shinythemes::shinytheme("yeti"),
+```
+
+There is a way to use CSS code (used for styling in html) to change color/font/style of one element of a theme if you desire, this is an advanced topic and we will skip. However, the code is included in the template if interested.
+
+### Step 7: Practice!
+Now time for you to practice!
+
+Can you include a dot plot on the `Home` tab that shows the players that completed a certain number of passes within a certain range, where the range depends on the slider from the side bar?
+
+### Step 8: Publishing to Posit Cloud
+Create an account at [Posit Cloud](https://posit.cloud/), then click publish in RStudio and login using your account. This will push your app to the Posit server.
+
+Once you publish your app, you will get a unique link that corresponds to your app that anyone with the link can access. The example app we created today an be found at this [link](https://colemanferrell2.shinyapps.io/Shiny_FinalApp/)
+
+### Step 9: Extra Topics
+Below are other topics that could potentially be useful:
+- Shiny Cards
+- Conditional Panels
+- Tab Panels
+- Tab Title Styling
+
+
+Solutions are included in the final app located in the `Shiny_FinalApp/app.R`
