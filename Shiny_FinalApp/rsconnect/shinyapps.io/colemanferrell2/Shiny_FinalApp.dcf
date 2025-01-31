@@ -1,0 +1,12 @@
+name: Shiny_FinalApp
+title: Shiny_FinalApp
+username: colemanferrell2
+account: colemanferrell2
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 13865208
+bundleId: 9727044
+url: https://colemanferrell2.shinyapps.io/Shiny_FinalApp/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
